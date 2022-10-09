@@ -14,7 +14,7 @@ public class TestBase {
     @Before
     public void start() {
         driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
     }
 
     @After
