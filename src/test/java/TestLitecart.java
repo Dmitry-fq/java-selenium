@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -22,9 +23,13 @@ public class TestLitecart extends TestBase {
         return present;
     }
 
+    public void goToMain() {
+        driver.get("http://localhost/litecart/en/");
+    }
+
+
     @Test
     public void myFirstTest() {
-        this.start();
         this.goToAdminPanel();
         this.adminLogin();
 
@@ -52,6 +57,17 @@ public class TestLitecart extends TestBase {
             menu = driver.findElements(By.id("app-"));
             System.out.println("_______________________");
         }
-//        this.stop();
+    }
+
+
+    @Test
+    public void testStickersDisplayed() {
+        this.goToMain();
+
+        List<WebElement> products = driver.findElements(By.className("image-wrapper"));
+        for (int i = 0; i < products.size(); i++) {
+            List<WebElement> stickers = products.get(i).findElements(By.className("sticker"));
+            Assertions.assertEquals(stickers.size(), 1);
+        }
     }
 }

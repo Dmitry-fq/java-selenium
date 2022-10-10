@@ -1,5 +1,5 @@
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -11,13 +11,13 @@ public class TestBase {
 
     public WebDriver driver;
 
-    @Before
+    @BeforeEach
     public void start() {
         driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
     }
 
-    @After
+//    @AfterEach
     public void stop() {
         driver.quit();
         driver = null;
