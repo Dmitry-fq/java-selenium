@@ -93,15 +93,12 @@ public class TestLitecart extends TestBase {
                 List<WebElement> rowZones = tableZones.findElements(By.tagName("tr"));
                 rowZones.remove(0);
                 rowZones.remove(rowZones.size() - 1);
-                System.out.println(rowZones.size());
                 for (WebElement rowZone: rowZones) {
                     WebElement zoneName = rowZone.findElement(By.cssSelector("td:nth-child(3)"));
                     listZoneNames.add(zoneName.getAttribute("textContent"));
-                    System.out.println(listZoneNames.size());
                 }
                 ArrayList<String> listZoneNamesSorted = new ArrayList<String>(listZoneNames);
                 Collections.sort(listZoneNamesSorted);
-                System.out.println(listZoneNames.size() + listZoneNamesSorted.size());
 
                 Assertions.assertEquals(listZoneNames, listZoneNamesSorted);
 
