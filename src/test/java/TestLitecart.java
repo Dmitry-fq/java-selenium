@@ -3,7 +3,12 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import org.junit.jupiter.api.Assertions;
 
 public class TestLitecart extends TestBase {
@@ -19,12 +24,15 @@ public class TestLitecart extends TestBase {
     }
 
     public boolean h1Present() {
-        boolean present = driver.findElement(By.tagName("h1")).isDisplayed();
-        return present;
+        return driver.findElement(By.tagName("h1")).isDisplayed();
     }
 
     public void goToMain() {
         driver.get("http://localhost/litecart/en/");
+    }
+
+    public void goToAdminCountries() {
+        driver.get("http://localhost/litecart/admin/?app=countries&doc=countries");
     }
 
 
@@ -52,16 +60,58 @@ public class TestLitecart extends TestBase {
         }
     }
 
-
     @Test
     public void testStickersDisplayed() {
         this.goToMain();
 
         List<WebElement> products = driver.findElements(By.className("product"));
-        for (int i = 0; i < products.size(); i++) {
-            List<WebElement> stickers = products.get(i).findElements(By.className("sticker"));
+        for (WebElement el : products) {
+            List<WebElement> stickers = el.findElements(By.className("sticker"));
             Assertions.assertEquals(stickers.size(), 1);
-            System.out.println(stickers.size());
         }
+    }
+
+    @Test
+    public void testSortCountriesAndZones() {
+        this.goToAdminCountries();
+        this.adminLogin();
+
+        int rowsSize = driver.findElements(By.className("row")).size();
+        ArrayList<String> listNames = new ArrayList<String>();
+        for (int i = 0; i < rowsSize; i++) {
+            List<WebElement> rowsCountries = driver.findElements(By.className("row"));
+            WebElement rowCountry = rowsCountries.get(i);
+            WebElement name = rowCountry.findElement(By.tagName("a"));
+            listNames.add(name.getText());
+            String country = name.getText(); // Удалить после дебага
+
+            WebElement zone = rowCountry.findElement(By.cssSelector("td:nth-child(6)"));
+            if (!Objects.equals(zone.getText(), "0")) {
+                name.click();
+                ArrayList<String> listZoneNames = new ArrayList<String>();
+                WebElement tableZones = driver.findElement(By.id("table-zones"));
+                List<WebElement> rowZones = tableZones.findElements(By.tagName("tr"));
+                rowZones.remove(0);
+                rowZones.remove(rowZones.size() - 1);
+                System.out.println(rowZones.size());
+                for (WebElement rowZone: rowZones) {
+                    WebElement zoneName = rowZone.findElement(By.cssSelector("td:nth-child(3)"));
+                    listZoneNames.add(zoneName.getAttribute("textContent"));
+                    System.out.println(listZoneNames.size());
+                }
+                ArrayList<String> listZoneNamesSorted = new ArrayList<String>(listZoneNames);
+                Collections.sort(listZoneNamesSorted);
+                System.out.println(listZoneNames.size() + listZoneNamesSorted.size());
+
+                Assertions.assertEquals(listZoneNames, listZoneNamesSorted);
+
+                System.out.println("Зоны " + country + " проверены"); // Удалить после дебага
+                driver.navigate().back();
+            }
+        }
+        ArrayList<String> listNamesSorted = new ArrayList<>(listNames);
+        Collections.sort(listNamesSorted);
+
+        Assertions.assertEquals(listNames, listNamesSorted);
     }
 }
