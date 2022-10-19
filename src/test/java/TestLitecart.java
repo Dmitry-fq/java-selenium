@@ -1,15 +1,11 @@
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.support.ui.Select;
 
 public class TestLitecart extends TestBase {
 
@@ -33,6 +29,14 @@ public class TestLitecart extends TestBase {
 
     public void goToAdminCountries() {
         driver.get("http://localhost/litecart/admin/?app=countries&doc=countries");
+    }
+
+    public void goToCreateAccount() {
+        driver.findElement(By.cssSelector("[name=login_form] a")).click();
+    }
+
+    public void doLogout() {
+        driver.findElement(By.cssSelector(".list-vertical li:nth-child(4) a")).click();
     }
 
 
@@ -111,5 +115,33 @@ public class TestLitecart extends TestBase {
         Collections.sort(listNamesSorted);
 
         Assertions.assertEquals(listNames, listNamesSorted);
+    }
+
+    @Test
+    public void testRegistration() {
+        this.goToMain();
+        this.goToCreateAccount();
+
+        driver.findElement(By.cssSelector("[name=firstname]")).sendKeys("Test");
+        driver.findElement(By.cssSelector("[name=lastname]")).sendKeys("Test");
+        driver.findElement(By.cssSelector("[name=address1]")).sendKeys("Test");
+        driver.findElement(By.cssSelector("[name=postcode]")).sendKeys("12345");
+        driver.findElement(By.cssSelector("[name=city]")).sendKeys("Test");
+        Select country = new Select(driver.findElement(By.cssSelector("[name=country_code]")));
+        country.selectByIndex(224);
+        String email = Double.toString((int) (Math.random() * 100000)) + "@gmail.com";
+        driver.findElement(By.cssSelector("[name=email]")).sendKeys(email);
+        driver.findElement(By.cssSelector("[name=phone]")).sendKeys("+123");
+        String password = "123";
+        driver.findElement(By.cssSelector("[name=password]")).sendKeys(password);
+        driver.findElement(By.cssSelector("[name=confirmed_password]")).sendKeys(password);
+        driver.findElement(By.cssSelector("[name=create_account]")).click();
+
+        this.doLogout();
+        driver.findElement(By.cssSelector("[name=email]")).sendKeys(email);
+        driver.findElement(By.cssSelector("[name=password]")).sendKeys(password);
+        driver.findElement(By.cssSelector("[name=login]")).click();
+        this.doLogout();
+
     }
 }
