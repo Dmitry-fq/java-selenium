@@ -78,8 +78,8 @@ public class TestLitecart extends TestBase {
 
         int rowsSize = driver.findElements(By.className("row")).size();
         ArrayList<String> listNames = new ArrayList<String>();
+        List<WebElement> rowsCountries = driver.findElements(By.className("row"));
         for (int i = 0; i < rowsSize; i++) {
-            List<WebElement> rowsCountries = driver.findElements(By.className("row"));
             WebElement rowCountry = rowsCountries.get(i);
             WebElement name = rowCountry.findElement(By.tagName("a"));
             listNames.add(name.getText());
@@ -104,6 +104,7 @@ public class TestLitecart extends TestBase {
 
                 System.out.println("Зоны " + country + " проверены"); // Удалить после дебага
                 driver.navigate().back();
+                rowsCountries = driver.findElements(By.className("row"));
             }
         }
         ArrayList<String> listNamesSorted = new ArrayList<>(listNames);
