@@ -2,6 +2,7 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import java.io.File;
 import java.util.*;
 
 import org.junit.jupiter.api.Assertions;
@@ -37,6 +38,11 @@ public class TestLitecart extends TestBase {
 
     public void doLogout() {
         driver.findElement(By.cssSelector(".list-vertical li:nth-child(4) a")).click();
+    }
+
+    public void goToAdminMenuItem(int index) {
+        List<WebElement> menu = driver.findElements(By.id("app-"));
+        menu.get(index).click();
     }
 
 
@@ -142,6 +148,54 @@ public class TestLitecart extends TestBase {
         driver.findElement(By.cssSelector("[name=password]")).sendKeys(password);
         driver.findElement(By.cssSelector("[name=login]")).click();
         this.doLogout();
+    }
 
+    @Test
+    public void testAddNewProduct() {
+        this.goToAdminPanel();
+        this.adminLogin();
+        this.goToAdminMenuItem(1);
+
+        driver.findElement(By.cssSelector("#content div a:nth-child(2)")).click();
+        driver.findElement(By.cssSelector("[name=status][value='1']")).click();
+        driver.findElement(By.cssSelector("[name='name[en]'")).sendKeys("Test");
+        String productName = driver.findElement(By.cssSelector("[name='name[en]'")).getAttribute("value");
+        driver.findElement(By.cssSelector("[name=code]")).sendKeys("Test");
+        driver.findElement(By.cssSelector("[data-name='Rubber Ducks']")).click();
+        Select defaultCategory = new Select(driver.findElement(By.cssSelector("[name=default_category_id]")));
+        defaultCategory.selectByIndex(1);
+        driver.findElement(By.cssSelector("[value='1-1']")).click();
+        driver.findElement(By.cssSelector("[name=quantity]")).clear();
+        driver.findElement(By.cssSelector("[name=quantity]")).sendKeys("1");
+        String path = new File("files/wat-duck.jpg").getAbsolutePath();
+        driver.findElement(By.cssSelector("[name='new_images[]']")).sendKeys(path);
+        driver.findElement(By.cssSelector("[name='new_images[]']")).sendKeys(path);
+        driver.findElement(By.cssSelector("[name=date_valid_from]")).sendKeys("20102022");
+        driver.findElement(By.cssSelector("[name=date_valid_to]")).sendKeys("20102023");
+
+        driver.findElement(By.cssSelector(".index li:nth-child(2)")).click();
+        Select manufacturer_id = new Select(driver.findElement(By.cssSelector("[name=manufacturer_id]")));
+        manufacturer_id.selectByIndex(1);
+        driver.findElement(By.cssSelector("[name=keywords]")).sendKeys("duck");
+        driver.findElement(By.cssSelector("[name='short_description[en]']")).sendKeys("duck");
+        driver.findElement(By.className("trumbowyg-editor")).sendKeys("duck");
+        driver.findElement(By.cssSelector("[name='head_title[en]']")).sendKeys("duck");
+        driver.findElement(By.cssSelector("[name='meta_description[en]']")).sendKeys("duck");
+
+        driver.findElement(By.cssSelector(".index li:nth-child(4)")).click();
+        driver.findElement(By.cssSelector("[name=purchase_price]")).clear();
+        driver.findElement(By.cssSelector("[name=purchase_price]")).sendKeys("13");
+        Select currency_code = new Select(driver.findElement(By.cssSelector("[name=purchase_price_currency_code]")));
+        currency_code.selectByIndex(1);
+        driver.findElement(By.cssSelector("[name='prices[USD]']")).sendKeys("1");
+        driver.findElement(By.cssSelector("[name='prices[EUR]']")).sendKeys("1");
+        driver.findElement(By.cssSelector("[name=save]")).click();
+
+        String product = driver.findElement(By.cssSelector(".dataTable tr:nth-child(4)")).getText();
+        Assertions.assertEquals(productName, product);
+
+        driver.findElement(By.cssSelector(".dataTable tr:nth-child(4) [type=checkbox]")).click();
+        driver.findElement(By.cssSelector("[name=delete]")).click();
+        driver.switchTo().alert().accept();
     }
 }
