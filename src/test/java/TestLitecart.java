@@ -158,7 +158,7 @@ public class TestLitecart extends TestBase {
 
         driver.findElement(By.cssSelector("#content div a:nth-child(2)")).click();
         driver.findElement(By.cssSelector("[name=status][value='1']")).click();
-        driver.findElement(By.cssSelector("[name='name[en]'")).sendKeys("Test");
+        driver.findElement(By.cssSelector("[name='name[en]']")).sendKeys("Test");
         String productName = driver.findElement(By.cssSelector("[name='name[en]'")).getAttribute("value");
         driver.findElement(By.cssSelector("[name=code]")).sendKeys("Test");
         driver.findElement(By.cssSelector("[data-name='Rubber Ducks']")).click();
@@ -191,10 +191,11 @@ public class TestLitecart extends TestBase {
         driver.findElement(By.cssSelector("[name='prices[EUR]']")).sendKeys("1");
         driver.findElement(By.cssSelector("[name=save]")).click();
 
-        String product = driver.findElement(By.cssSelector(".dataTable tr:nth-child(4)")).getText();
-        Assertions.assertEquals(productName, product);
+        List<WebElement> catalogList = driver.findElements(By.cssSelector(".dataTable tbody tr"));
+        WebElement product = catalogList.get(catalogList.size() - 2);
+        Assertions.assertEquals(productName, product.getText());
 
-        driver.findElement(By.cssSelector(".dataTable tr:nth-child(4) [type=checkbox]")).click();
+        product.findElement(By.cssSelector("[type=checkbox]")).click();
         driver.findElement(By.cssSelector("[name=delete]")).click();
         driver.switchTo().alert().accept();
     }
