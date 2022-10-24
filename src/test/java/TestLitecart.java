@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
 import java.io.File;
@@ -93,7 +94,6 @@ public class TestLitecart extends TestBase {
             WebElement rowCountry = rowsCountries.get(i);
             WebElement name = rowCountry.findElement(By.tagName("a"));
             listNames.add(name.getText());
-            String country = name.getText(); // Удалить после дебага
 
             WebElement zone = rowCountry.findElement(By.cssSelector("td:nth-child(6)"));
             if (!Objects.equals(zone.getText(), "0")) {
@@ -112,7 +112,6 @@ public class TestLitecart extends TestBase {
 
                 Assertions.assertEquals(listZoneNames, listZoneNamesSorted);
 
-                System.out.println("Зоны " + country + " проверены"); // Удалить после дебага
                 driver.navigate().back();
                 rowsCountries = driver.findElements(By.className("row"));
             }
@@ -133,8 +132,8 @@ public class TestLitecart extends TestBase {
         driver.findElement(By.cssSelector("[name=address1]")).sendKeys("Test");
         driver.findElement(By.cssSelector("[name=postcode]")).sendKeys("12345");
         driver.findElement(By.cssSelector("[name=city]")).sendKeys("Test");
-        Select country = new Select(driver.findElement(By.cssSelector("[name=country_code]")));
-        country.selectByIndex(224);
+        WebElement selector = driver.findElement(By.cssSelector("[name=country_code]"));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].selectedIndex = 224; arguments[0].dispatchEvent(new Event('change'))", selector);
         String email = Double.toString((int) (Math.random() * 100000)) + "@gmail.com";
         driver.findElement(By.cssSelector("[name=email]")).sendKeys(email);
         driver.findElement(By.cssSelector("[name=phone]")).sendKeys("+123");
