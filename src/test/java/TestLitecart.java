@@ -4,10 +4,15 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.*;
 
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import static org.openqa.selenium.support.ui.ExpectedConditions.attributeContains;
 
 public class TestLitecart extends TestBase {
 
@@ -44,6 +49,36 @@ public class TestLitecart extends TestBase {
     public void goToAdminMenuItem(int index) {
         List<WebElement> menu = driver.findElements(By.id("app-"));
         menu.get(index).click();
+    }
+
+    public void addProductToCart(int quantity) {
+        for (int i = 1; i <= quantity; i++) {
+            driver.findElement(By.className("product")).click();
+            if (isElementPresent(driver, By.cssSelector("[name='options[Size]']"))) {
+                Select size = new Select(driver.findElement(By.cssSelector("[name='options[Size]']")));
+                size.selectByIndex(1);
+            }
+            driver.findElement(By.cssSelector("[name=add_cart_product]")).click();
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            wait.until(attributeContains(driver.findElement(
+                    By.cssSelector("#cart .quantity")),
+                    "innerText",
+                    Integer.toString(i)));
+            driver.navigate().back();
+        }
+    }
+
+    public void removeAllProductsFromCart() {
+        List<WebElement> products = driver.findElements(By.cssSelector(".dataTable tr td.item"));
+            while (this.isElementPresent(driver, By.cssSelector(".shortcut"))) {
+                driver.findElement(By.cssSelector(".shortcut")).click();
+                driver.findElement(By.cssSelector("[name=remove_cart_item]")).click();
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+                wait.until(ExpectedConditions.numberOfElementsToBeLessThan(By.cssSelector(".dataTable tr td.item"), products.size()));
+            }
+            if (this.isElementPresent(driver, By.cssSelector("[name=remove_cart_item]"))) {
+                driver.findElement(By.cssSelector("[name=remove_cart_item]")).click();
+            }
     }
 
 
@@ -197,5 +232,14 @@ public class TestLitecart extends TestBase {
         product.findElement(By.cssSelector("[type=checkbox]")).click();
         driver.findElement(By.cssSelector("[name=delete]")).click();
         driver.switchTo().alert().accept();
+    }
+
+    @Test
+    public void testAddProductToCart() {
+        this.goToMain();
+        this.addProductToCart(3);
+        driver.findElement(By.id("cart")).click();
+        this.removeAllProductsFromCart();
+
     }
 }
