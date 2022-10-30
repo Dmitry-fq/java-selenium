@@ -81,16 +81,25 @@ public class TestLitecart extends TestBase {
             }
     }
 
+    public void openNewWindow(String originalWindow, WebElement link) {
+        Set<String> existingWindows = driver.getWindowHandles();
+        link.click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        String newWindow = wait.until(anyWindowOtherThan(existingWindows));
+        driver.switchTo().window(newWindow);
+        driver.close();
+        driver.switchTo().window(originalWindow);
+    }
+
 
     @Test
-    public void myFirstTest() {
+    public void testAdminMenu() {
         this.goToAdminPanel();
         this.adminLogin();
 
         List<WebElement> menu = driver.findElements(By.id("app-"));
         for (int i = 0; i < menu.size(); i++) {
             menu.get(i).click();
-            System.out.println(h1Present());
             Assertions.assertTrue(h1Present());
             //TODO убрать дублирование кода в menu и submenu
             menu = driver.findElements(By.id("app-"));
@@ -99,7 +108,6 @@ public class TestLitecart extends TestBase {
                 submenu.get(j).click();
                 menu = driver.findElements(By.id("app-"));
                 submenu = menu.get(i).findElements(By.tagName("li"));
-                System.out.println(h1Present());
                 Assertions.assertTrue(h1Present());
             }
             menu = driver.findElements(By.id("app-"));
@@ -241,5 +249,18 @@ public class TestLitecart extends TestBase {
         driver.findElement(By.id("cart")).click();
         this.removeAllProductsFromCart();
 
+    }
+
+    @Test
+    public void testLinkInNewWindow() {
+        driver.get("http://localhost/litecart/admin/?app=countries&doc=countries");
+        this.adminLogin();
+        driver.findElement(By.cssSelector("a.button")).click();
+
+        List<WebElement> externalLinks = driver.findElements(By.cssSelector(".fa.fa-external-link"));
+        for (WebElement link: externalLinks) {
+            String windowAddNewCountry = driver.getWindowHandle();
+            this.openNewWindow(windowAddNewCountry, link);
+        }
     }
 }
