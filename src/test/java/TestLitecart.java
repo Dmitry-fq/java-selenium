@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.util.*;
 
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -261,6 +262,23 @@ public class TestLitecart extends TestBase {
         for (WebElement link: externalLinks) {
             String windowAddNewCountry = driver.getWindowHandle();
             this.openNewWindow(windowAddNewCountry, link);
+        }
+    }
+
+    @Test
+    public void testLogProducts() {
+        driver.get("http://localhost/litecart/admin/?app=catalog&doc=catalog&category_id=1");
+        this.adminLogin();
+
+        List<WebElement> rows = driver.findElements(By.cssSelector(".dataTable tr.row"));
+        for (int i = 1; i < rows.size(); i++) {
+            rows = driver.findElements(By.cssSelector(".dataTable tr.row"));
+            WebElement input = rows.get(i).findElement(By.cssSelector("td input"));
+            if (input.getAttribute("name").contains("products")) {
+            rows.get(i).findElement(By.cssSelector("td a")).click();
+            System.out.println(driver.manage().logs().get("browser"));
+            driver.navigate().back();
+            }
         }
     }
 }
